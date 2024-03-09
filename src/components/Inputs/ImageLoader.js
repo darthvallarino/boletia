@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Box } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import { Box } from "@mui/material";
+import ImageRatio from "../ImageRatio";
 
-const ImageUploader = () => {
-  const [imageSrc, setImageSrc] = useState('');
+const ImageUploader = ({ id, ratio = "4 * 4", value, onChange = () => {} }) => {
+  const [imageSrc, setImageSrc] = useState(value);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -16,25 +17,23 @@ const ImageUploader = () => {
   };
 
   const handleButtonClick = () => {
-    document.getElementById('image-input').click();
+    document.getElementById(id).click();
   };
 
   useEffect(() => {
-    console.log(imageSrc);
-  }, [imageSrc])
+    onChange(imageSrc);
+  }, [imageSrc]);
 
   return (
-    <Box>
+    <Box sx={{ width: "100%" }}>
       <input
-        id="image-input"
+        id={id}
         type="file"
         accept="image/*"
         onChange={handleFileChange}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       />
-      <Button variant="contained" onClick={handleButtonClick}>
-        Cargar archivo
-      </Button>
+      <ImageRatio src={imageSrc} ratio={ratio} onClick={handleButtonClick} />
     </Box>
   );
 };
