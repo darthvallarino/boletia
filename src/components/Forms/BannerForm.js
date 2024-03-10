@@ -2,6 +2,7 @@ import {
   FormControl,
   InputLabel,
   OutlinedInput,
+  FormHelperText,
   Grid,
   Button,
   Typography,
@@ -12,9 +13,39 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useForm, Controller } from "react-hook-form";
 import dayjs from "dayjs";
 import ImageLoader from "../Inputs/ImageLoader";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-export default function BannerForm({ onSubmit = () => {} }) {
-  const { handleSubmit, control, register } = useForm();
+yup.addMethod(yup.object, "isAfter", function method(message) {
+  return this.test("isAfter", message, (value) => value.isAfter(dayjs(), "h"));
+});
+
+const schema = yup
+  .object({
+    name: yup.string().required("El nombre es obligatorio"),
+    url: yup.string().required("La url es obligatoria").url("La url no es valida."),
+    date: yup.object().isAfter("La fecha debe ser posterior"),
+    imgDesktop: yup.string().required("Esta imagen es obligatoria"),
+    imgTablet: yup.string().required("Esta imagen es obligatoria"),
+    imgMobile: yup.string().required("Esta imagen es obligatoria"),
+  })
+  .required();
+
+export default function BannerForm({ onSubmit = () => {}, defaultValues }) {
+  const {
+    handleSubmit,
+    control,
+    register,
+    formState: { errors },
+  } = useForm({
+    defaultValues: defaultValues
+      ? {
+          ...defaultValues,
+          date: dayjs(defaultValues.date, "YYYY-MM-DDTHH:mm:ss"),
+        }
+      : null,
+    resolver: yupResolver(schema),
+  });
   const transformSubmit = (data) => {
     onSubmit({
       ...data,
@@ -35,6 +66,28 @@ export default function BannerForm({ onSubmit = () => {} }) {
               fullWidth
               {...register("name")}
             />
+            {errors.name && (
+              <FormHelperText error variant="outlined">
+                {errors.name?.message}
+              </FormHelperText>
+            )}
+          </FormControl>
+        </Grid>
+        <Grid item md={6} sm={12}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="component-simple">
+              Url del Evento
+            </InputLabel>
+            <OutlinedInput
+              label="Url del Evento"
+              fullWidth
+              {...register("url")}
+            />
+            {errors.url && (
+              <FormHelperText error variant="outlined">
+                {errors.url?.message}
+              </FormHelperText>
+            )}
           </FormControl>
         </Grid>
         <Grid item md={6} sm={12}>
@@ -47,6 +100,11 @@ export default function BannerForm({ onSubmit = () => {} }) {
                   onChange={onChange}
                   fullWidth
                 />
+                {errors.date && (
+                  <FormHelperText error variant="outlined">
+                    {errors.date?.message}
+                  </FormHelperText>
+                )}
               </LocalizationProvider>
             )}
             control={control}
@@ -61,45 +119,69 @@ export default function BannerForm({ onSubmit = () => {} }) {
               <Controller
                 render={({ field: { onChange, value } }) => (
                   <ImageLoader
-                    id="img-desktop"
-                    ratio="4 * 3"
+                    id="imgDesktop"
+                    ratio="2340 * 700"
                     value={value}
                     onChange={onChange}
+                    maxSize={800000}
+                    width={150}
+                    height={150}
                   />
                 )}
                 control={control}
-                name="img-desktop"
+                name="imgDesktop"
               />
+              {errors.imgDesktop && (
+                <FormHelperText error variant="outlined">
+                  {errors.imgDesktop?.message}
+                </FormHelperText>
+              )}
             </Grid>
             <Grid item md={4}>
               <Typography>Tablet:</Typography>
               <Controller
                 render={({ field: { onChange, value } }) => (
                   <ImageLoader
-                    id="img-tablet"
-                    ratio="6 * 4"
+                    id="imgTablet"
+                    ratio="1440 * 1080"
                     value={value}
                     onChange={onChange}
+                    maxSize={800000}
+                    width={150}
+                    height={150}
                   />
                 )}
                 control={control}
-                name="img-tablet"
+                name="imgTablet"
               />
+              {errors.imgTablet && (
+                <FormHelperText error variant="outlined">
+                  {errors.imgTablet?.message}
+                </FormHelperText>
+              )}
             </Grid>
             <Grid item md={3}>
               <Typography>Mobile:</Typography>
               <Controller
                 render={({ field: { onChange, value } }) => (
                   <ImageLoader
-                    id="img-mobile"
-                    ratio="6 * 3"
+                    id="imgMobile"
+                    ratio="1920 * 1080"
                     value={value}
                     onChange={onChange}
+                    maxSize={800000}
+                    width={150}
+                    height={150}
                   />
                 )}
                 control={control}
-                name="img-mobile"
+                name="imgMobile"
               />
+              {errors.imgMobile && (
+                <FormHelperText error variant="outlined">
+                  {errors.imgMobile?.message}
+                </FormHelperText>
+              )}
             </Grid>
           </Grid>
         </Grid>

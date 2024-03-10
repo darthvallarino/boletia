@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import {
   Container,
   Table,
@@ -11,12 +12,39 @@ import {
   Toolbar,
   Typography,
   IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material//Edit";
 import useEvents from "./useEvents";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
-import 'dayjs/locale/es-mx';
+import "dayjs/locale/es-mx";
+
+function DeleteConfirmation({ id, handleClose, handleOk }) {
+  return (
+    <Dialog open={!!id} onClose={handleClose}>
+      <DialogTitle>Eliminar</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          {`Está seguro que desea eliminar este evento?`}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button onClick={handleOk}>Ok</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 
 function EnhancedTableToolbar() {
   const router = useRouter();
@@ -48,7 +76,20 @@ function EnhancedTableToolbar() {
 }
 
 export default function Home() {
-  const { events } = useEvents();
+  const { events, removeEvent } = useEvents();
+  const [idDeleteConfirmation, setIdDeleteConfirmation] = useState(null);
+
+  const handleOpenDeleteConfirmation = (id) => {
+    setIdDeleteConfirmation(id);
+  };
+  const handleCloseDeleteConfirmation = () => {
+    setIdDeleteConfirmation(null);
+  };
+  const handleOkDeleteConfirmation = () => {
+    removeEvent(idDeleteConfirmation);
+    setIdDeleteConfirmation(null);
+  };
+  const router = useRouter();
   return (
     <Container>
       {events && (
@@ -60,6 +101,7 @@ export default function Home() {
                 <TableRow>
                   <TableCell>Evento</TableCell>
                   <TableCell>Fecha</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -72,7 +114,25 @@ export default function Home() {
                       {row.name}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {dayjs(row.date, "YYYY-MM-DDTHH:mm:ss").locale('es-mx').format("dddd D [d]e MMMM [d]e YYYY")}
+                      {dayjs(row.date, "YYYY-MM-DDTHH:mm:ss")
+                        .locale("es-mx")
+                        .format("dddd D [d]e MMMM [d]e YYYY")}
+                    </TableCell>
+                    <TableCell component="th" scope="row" align="right">
+                      <IconButton
+                        onClick={() => {
+                          router.push(`/events/edit/${row.id}`);
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          handleOpenDeleteConfirmation(row.id);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -81,6 +141,11 @@ export default function Home() {
           </TableContainer>
         </Paper>
       )}
+      <DeleteConfirmation
+        id={idDeleteConfirmation}
+        handleClose={handleCloseDeleteConfirmation}
+        handleOk={handleOkDeleteConfirmation}
+      />
     </Container>
   );
 }

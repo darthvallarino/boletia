@@ -9,7 +9,10 @@ import {
 } from "./eventsSlice";
 
 export default function useEvents() {
-  const events = useSelector((state) => Object.values(state.events.entities || {}));
+  const events = useSelector((state) =>
+    Object.values(state.events.entities || {})
+  );
+  const eventsEntities = useSelector((state) => state.events.entities);
   const dispatch = useDispatch();
 
   const addEvent = (event) => dispatch(add(event));
@@ -19,6 +22,8 @@ export default function useEvents() {
   const upsertManyEvents = (events) => dispatch(upsertMany(events));
   const removeManyEvents = (events) => dispatch(removeMany(events));
 
+  const getEventById = (id) => eventsEntities[id];
+
   return {
     events,
     addEvent,
@@ -27,5 +32,6 @@ export default function useEvents() {
     setAllEvents,
     upsertManyEvents,
     removeManyEvents,
+    getEventById,
   };
 }

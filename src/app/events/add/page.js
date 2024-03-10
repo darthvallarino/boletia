@@ -5,7 +5,7 @@ import { uuid } from "uuidv4";
 import useEvents from "../useEvents";
 import { useRouter } from "next/navigation";
 
-export default function Home() {
+export default function Page() {
   const router = useRouter();
   const { addEvent } = useEvents();
   const onSubmit = (data) => {
