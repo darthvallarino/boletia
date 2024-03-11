@@ -104,10 +104,14 @@ const ImageUploader = ({
       img.onload = () => {
         const imgWidth = img.naturalWidth;
         const imgHeight = img.naturalHeight;
-        if (width && height && width === imgWidth && height === imgHeight) {
-          resolve(true);
+        if (width && height) {
+          if (width === imgWidth && height === imgHeight) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
         } else {
-          resolve(false);
+          resolve(true);
         }
       };
     });
