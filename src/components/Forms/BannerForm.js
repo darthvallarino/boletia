@@ -124,8 +124,8 @@ export default function BannerForm({ onSubmit = () => {}, defaultValues }) {
                     value={value}
                     onChange={onChange}
                     maxSize={800000}
-                    width={150}
-                    height={150}
+                    width={2340}
+                    height={700}
                   />
                 )}
                 control={control}
@@ -147,8 +147,8 @@ export default function BannerForm({ onSubmit = () => {}, defaultValues }) {
                     value={value}
                     onChange={onChange}
                     maxSize={800000}
-                    width={150}
-                    height={150}
+                    width={1440}
+                    height={1080}
                   />
                 )}
                 control={control}
@@ -170,8 +170,8 @@ export default function BannerForm({ onSubmit = () => {}, defaultValues }) {
                     value={value}
                     onChange={onChange}
                     maxSize={800000}
-                    width={150}
-                    height={150}
+                    width={1920}
+                    height={1080}
                   />
                 )}
                 control={control}
